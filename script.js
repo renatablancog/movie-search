@@ -1,28 +1,33 @@
 const itemForm = document.getElementById('item-form'); //submitButton
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
+const clearBtn = document.getElementById('clear');
+const itemFilter = document.getElementById('filter');
 
 function addItem(e) {
   e.preventDefault();
 
   const newItem = itemInput.value;
 
-  //Validate input 
+  //Validate input
   if (newItem === '') {
-    alert('Add an item please')
+    alert('Add an item please');
     return;
   }
 
-  //Create list item 
+  //Create list item
   const list = document.createElement('li');
   list.appendChild(document.createTextNode(newItem));
 
   const button = createButton('remove-item btn-link text-red');
   list.appendChild(button);
 
+  //Append to the DOM
   itemList.appendChild(list);
   itemInput.value = '';
 
+  //Hide filter and clear btn
+  checkUI();
 }
 
 function createButton(classes) {
@@ -39,6 +44,59 @@ function createIcon(classes) {
   return icon;
 }
 
+function removeItem(e) {
+  if (e.target.parentElement.classList.contains('remove-item')) {
+    if (confirm('Are you sure?')) {
+      e.target.parentElement.parentElement.remove();
+
+      checkUI();
+    }
+  }
+}
+
+function removeList() {
+  if (confirm('Are you sure?')) {
+    while (itemList.firstChild) {
+      itemList.removeChild(itemList.firstChild);
+      checkUI();
+    }
+  }
+}
+
+function checkUI() {
+  //selecting items <li> every time we add an item
+  const items = itemList.querySelectorAll('li');
+
+  if (items.length === 0) {
+    clearBtn.style.display = 'none';
+    itemFilter.style.display = 'none';
+  } else {
+    clearBtn.style.display = 'block';
+    itemFilter.style.display = 'block';
+  }
+  // console.log(items);
+}
+
+function filterItems(e) {
+  const text = e.target.value.toLowerCase();
+  const items = itemList.querySelectorAll('li');
+
+  items.forEach((item) => {
+    const itemName = item.firstChild.textContent.toLowerCase();
+    // console.log(itemName);
+    if (itemName.indexOf(text) != -1) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
 
 //Event Listeners
-itemForm.addEventListener('submit', addItem)
+itemForm.addEventListener('submit', addItem);
+itemList.addEventListener('click', removeItem); //event delegation to the li elements
+clearBtn.addEventListener('click', removeList);
+itemFilter.addEventListener('input', filterItems);
+
+//As soon as page loads (only once)
+checkUI();
