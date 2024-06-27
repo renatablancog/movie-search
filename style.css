@@ -128,3 +128,7 @@ input[type='checkbox'] {
     width: 100%;
   }
 }
+
+.edit-mode {
+  color: #ccc;
+}
