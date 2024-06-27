@@ -23,9 +23,6 @@ function addItemForm(e) {
     return;
   }
 
-  addItemToDOM(newItem);
-  addItemToLocalStorage(newItem);
-
   //Check for Edit Mode
   if (isEditMode) {
     const itemToEdit = itemList.querySelector('.edit-mode');
@@ -34,10 +31,23 @@ function addItemForm(e) {
     itemToEdit.classList.remove('edit-mode');
     itemToEdit.remove();
     isEditMode = false;
+  } else {
+    if (checkIfItemExists(newItem)) {
+      alert('Item already added');
+      return;
+    }
   }
-
+  addItemToDOM(newItem);
+  addItemToLocalStorage(newItem);
   //Hide filter, clear btn and addItem btn
   checkUI();
+}
+
+function checkIfItemExists(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  console.log(itemsFromStorage);
+
+  return itemsFromStorage.includes(item);
 }
 
 function createButton(classes) {
@@ -86,16 +96,6 @@ function removeItem(item) {
   }
 }
 
-function removeItemFromStorage(item) {
-  const itemsFromStorage = getItemsFromStorage();
-  // console.log(itemsFromStorage); ["milk","cheese","eggs",]
-  const filterFromStorage = itemsFromStorage.filter(
-    (element) => element !== item
-  );
-  // console.log(filterFromStorage);
-  localStorage.setItem('items', JSON.stringify(filterFromStorage));
-}
-
 function removeList() {
   if (confirm('Are you sure?')) {
     while (itemList.firstChild) {
@@ -104,6 +104,16 @@ function removeList() {
   }
   localStorage.clear();
   checkUI();
+}
+
+function removeItemFromStorage(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  // console.log(itemsFromStorage); ["milk","cheese","eggs",]
+  const filterFromStorage = itemsFromStorage.filter(
+    (element) => element !== item
+  );
+  // console.log(filterFromStorage);
+  localStorage.setItem('items', JSON.stringify(filterFromStorage));
 }
 
 function checkUI() {
